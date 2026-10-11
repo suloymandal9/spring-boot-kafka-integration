@@ -224,6 +224,9 @@ Process Message
 Successful Processing
      ↓
 Acknowledgement
+
+
+## next
      ↓
 Offset Commit
 
