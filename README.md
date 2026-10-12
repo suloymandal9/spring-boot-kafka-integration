@@ -226,7 +226,79 @@ Successful Processing
 Acknowledgement
 
 
-## next
+## 14.ExecutorService for Parallel Processing
+
+To process multiple Kafka events concurrently, I used Java's ExecutorService.
+
+I configured a fixed thread pool with 3 worker threads.
+
+ExecutorService
+      |
+      ├── Worker 1
+      ├── Worker 2
+      └── Worker 3
+
+Why?
+
+Instead of processing every event sequentially:
+
+Event 1 → Complete
+Event 2 → Complete
+Event 3 → Complete
+
+multiple events can be processed concurrently:
+
+Event 1 → Worker 1
+Event 2 → Worker 2
+Event 3 → Worker 3
+
+
+
+## 15.Kafka Parallelism vs Application Thread Parallelism
+
+These are two different concepts.
+
+Kafka-level parallelism is achieved using:
+
+Partitions
+
+Application-level parallelism is achieved using:
+
+ExecutorService
+Worker Threads
+
+So my architecture becomes:
+
+Kafka Topic
+     ↓
+Partitions
+     ↓
+@KafkaListener
+     ↓
+ExecutorService
+     ↓
+Worker 1 | Worker 2 | Worker 3
+
+This distinction is important because having 3 worker threads does not mean Kafka automatically creates 3 partitions or 3 consumers.
+
+
+## 16.Important Issue with Asynchronous Processing
+
+When using ExecutorService, the Kafka listener can submit a task to a worker and return before the worker has finished processing.
+
+Kafka Message
+     ↓
+@KafkaListener
+     ↓
+ExecutorService.submit()
+     ↓
+Listener returns
+     ↓
+Worker still processing
+
+This creates an important offset/acknowledgement problem.
+
+If the offset is committed before the worker successfully completes the processing, an application failure could cause the message to be considered processed even though the actual business processing was not completed.
      ↓
 Offset Commit
 
