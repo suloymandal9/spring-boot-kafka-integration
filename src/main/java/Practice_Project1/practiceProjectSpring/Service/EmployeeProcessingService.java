@@ -12,6 +12,12 @@ public class EmployeeProcessingService {
 
     public void process(EmployeeEvent event) {
 
+
+
+//        if (event.getEmployeeId() == 999) {
+//            throw new RuntimeException("Employee processing failed");
+//        }
+
         System.out.println(
                 Thread.currentThread().getName()
                         + " processing "

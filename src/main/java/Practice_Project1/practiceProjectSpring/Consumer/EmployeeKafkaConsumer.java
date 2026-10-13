@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import org.springframework.kafka.support.Acknowledgment;
+
 
 @Service
 @RequiredArgsConstructor
@@ -24,14 +26,24 @@ public class EmployeeKafkaConsumer {
             topics = "employee-events",
             groupId = "employee-group"
     )
-    public void consume(EmployeeEvent event) {
+    public void consume(EmployeeEvent event , Acknowledgment acknowledgment) {
 
-        executorService.submit(
-                ()-> employeeProcessingService.process(event)
-        );
-
-//        System.out.println(
-//                "Received Employee Event: " + event
+//        executorService.submit(
+//                ()-> employeeProcessingService.process(event)
 //        );
+
+
+
+        System.out.println(
+                "Received Employee Event: " + event
+        );
+        employeeProcessingService.process(event);
+
+//        processingService.process(event); — processes the employee event
+//        acknowledgment.acknowledge(); — acknowledges it only if
+//        the processing call returns successfully.
+
+        acknowledgment.acknowledge();
+        System.out.println("Event acknowledged successfully");
     }
 }

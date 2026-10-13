@@ -24,3 +24,11 @@ git remote add origin https://github.com/username/project-name.git
 git push -u origin main*/
 
 
+//Step 1: Pull remote changes using rebase
+//git pull --rebase origin main
+//
+//
+//Step 2: If it completes successfully, push your code
+//git push origin main
+
+
